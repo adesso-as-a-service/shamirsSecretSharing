@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Org.BouncyCastle.Math;
 
 namespace shamirsSecretSharing
 {
@@ -36,7 +37,7 @@ namespace shamirsSecretSharing
         }
 
         /// <summary>
-        /// Prime modulo used in little endian format
+        /// Prime modulo used in little endian format and unsigned
         /// </summary>
         public byte[] PrimeModulo
         {
@@ -53,7 +54,7 @@ namespace shamirsSecretSharing
             set;
         }
 
-        private uint[] allowedSizes = { 1024, 2048, 3072, 4096 };
+        public static readonly uint[] allowedSizes = { 1024, 2048, 3072, 4096 };
 
         public PublicKey(uint n, uint m, uint size)
         {
@@ -65,6 +66,10 @@ namespace shamirsSecretSharing
             N = n;
             M = m;
             ModSize = size;
+
+            Random rand = new SecretRandom();
+            BigInteger prime = BigInteger.ProbablePrime((int)ModSize, rand);
+            PrimeModulo = prime.ToByteArrayUnsigned();
 
         }
     }

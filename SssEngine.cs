@@ -35,9 +35,9 @@ namespace shamirsSecretSharing
         public static Tuple<PublicKey, Share[]> Encrypt(PublicKey pub, byte[] secret)
         {
             if (secret.Length > (pub.ModSize / 8) - 1) throw new ArgumentException("Secret exceeds the size of the prime modulo");
+
             
-            rand.
-            BigInteger prime = BigInteger.ProbablePrime(pub.ModSize, );
+            
         }
     }
 }
