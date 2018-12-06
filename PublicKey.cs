@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Org.BouncyCastle.Math;
+using Org.BouncyCastle.Crypto.Digests;
 
 namespace shamirsSecretSharing
 {
@@ -46,7 +47,7 @@ namespace shamirsSecretSharing
         }
 
         /// <summary>
-        /// Hashs of the private shares
+        /// Hashs of the private shares 
         /// </summary>
         private byte[][] PrivateShareHashs 
         {
@@ -63,14 +64,29 @@ namespace shamirsSecretSharing
             if (n < 2) throw new ArgumentException("n has to be greater or equal to 2");
             if (!Array.Exists(allowedSizes, element => element == size)) throw new ArgumentException(string.Format("size has to be in ( {0} )", string.Join(", ", allowedSizes)));
 
-            N = n;
-            M = m;
-            ModSize = size;
+            this.N = n;
+            this.M = m;
+            this.ModSize = size;
 
             Random rand = new SecretRandom();
-            BigInteger prime = BigInteger.ProbablePrime((int)ModSize, rand);
-            PrimeModulo = prime.ToByteArrayUnsigned();
+            BigInteger prime = BigInteger.ProbablePrime((int)this.ModSize, rand);
+            this.PrimeModulo = prime.ToByteArrayUnsigned();
+        }
 
+        public void CalculateHashes(Share[] shares)
+        {
+            Sha256Digest sha256Digest = new Sha256Digest();
+            this.PrivateShareHashs = new byte[shares.Length][];
+
+            for (int i = 0; i < shares.Length; i++)
+            {
+                this.PrivateShareHashs[i] = shares[i].GetHash();
+            }
+        }
+
+        public bool ContainsShare(Share share)
+        {
+            return Array.Exists(this.PrivateShareHashs, element => element.SequenceEqual(share.GetHash()));
         }
     }
 }

@@ -254,5 +254,14 @@ namespace shamirsSecretSharing
 
             return res;
         }
+
+        public void Destroy()
+        {
+            for (int i = 0; i < Coefficients.Length; i++)
+            {
+                // Destroy Coefficients
+            }
+            // Destroy Prime Modulo
+        }
     }
 }
