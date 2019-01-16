@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Org.BouncyCastle.Math;
 using Org.BouncyCastle.Crypto.Digests;
+using Org.BouncyCastle.Security;
 
 namespace shamirsSecretSharing
 {
@@ -68,7 +69,7 @@ namespace shamirsSecretSharing
             this.M = m;
             this.ModSize = size;
 
-            Random rand = new SecretRandom();
+            Random rand = new SecureRandom();
             BigInteger prime = BigInteger.ProbablePrime((int)this.ModSize, rand);
             this.PrimeModulo = prime.ToByteArrayUnsigned();
         }

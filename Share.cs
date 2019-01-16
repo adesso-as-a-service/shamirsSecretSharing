@@ -13,19 +13,19 @@ namespace shamirsSecretSharing
         /// <summary>
         /// X-value of the share
         /// </summary>
-        private byte[] X
+        public byte[] X
         {
             get;
-            set;
+            internal set;
         }
 
         /// <summary>
         /// Y-value of the share
         /// </summary>
-        private byte[] Y
+        public byte[] Y
         {
             get;
-            set;
+            internal set;
         }
 
         /// <summary>
@@ -33,6 +33,8 @@ namespace shamirsSecretSharing
         /// </summary>
         public Share(byte[] x, byte[] y)
         {
+            Y = new byte[y.Length];
+            X = new byte[x.Length];
             Array.Copy(y, Y, y.Length);
             Array.Copy(x, X, x.Length);
         }
@@ -46,6 +48,12 @@ namespace shamirsSecretSharing
             sha256.GetByteLength();
             sha256.DoFinal(hash, 0);
             return hash;
+        }
+
+        public override bool Equals(object obj)
+        {
+            var share = obj as Share;
+            return this.GetHash().SequenceEqual(share.GetHash());
         }
     }
 }

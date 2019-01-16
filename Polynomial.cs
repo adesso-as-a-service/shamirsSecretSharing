@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Org.BouncyCastle.Math;
+using Org.BouncyCastle.Security;
 
 namespace shamirsSecretSharing
 {
@@ -37,7 +38,7 @@ namespace shamirsSecretSharing
         /// <summary>
         /// RNG
         /// </summary>
-        private SecretRandom Rand;
+        private SecureRandom Rand;
 
 
         /// <summary>
@@ -55,7 +56,7 @@ namespace shamirsSecretSharing
             NumCoefficients = inNumCoefficients;
             ModuloBitSize = inModuloBitSize;
             Coefficients = new BigInteger[NumCoefficients];
-            Rand = new SecretRandom();
+            Rand = new SecureRandom();
         }
 
 
@@ -89,7 +90,7 @@ namespace shamirsSecretSharing
                 // destroy coefficient
                 throw new ArgumentException("the given zeroCoefficient is bigger than the modulo");
             }
-
+            Coefficients[0] = coefficient;
             for (int i = 1; i < Coefficients.Length; i++)
             {
                 Rand.NextBytes(storage);
@@ -206,7 +207,7 @@ namespace shamirsSecretSharing
             help1 = ret;
             ret = ret.Mod(bigPrimeModulo);
             res = ret.ToByteArrayUnsigned();
-            // destrox help1, ret
+            // destroy help1, ret
             return res;
         }
 
@@ -246,7 +247,9 @@ namespace shamirsSecretSharing
                     if (i != j)
                     {
                         top = top.Multiply(rel[j]);
+                        top = top.Mod(primeModulo);
                         down = down.Multiply(xValues[i].Subtract(xValues[j]));
+                        down = down.Mod(primeModulo);
                     }
                 }
                 res[i] = top.Multiply(down.ModInverse(primeModulo)).Mod(primeModulo);
