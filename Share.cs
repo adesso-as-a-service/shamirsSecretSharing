@@ -7,6 +7,7 @@ using Org.BouncyCastle.Crypto.Digests;
 
 namespace shamirsSecretSharing
 {
+    [Serializable]
     public class Share
     {
 
