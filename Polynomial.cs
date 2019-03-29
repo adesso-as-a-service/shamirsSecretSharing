@@ -88,6 +88,7 @@ namespace shamirsSecretSharing
             if (coefficient.CompareTo(PrimeModulo) != -1)
             {
                 // destroy coefficient
+                coefficient.Dispose();
                 throw new ArgumentException("the given zeroCoefficient is bigger than the modulo");
             }
             Coefficients[0] = coefficient;
@@ -97,6 +98,7 @@ namespace shamirsSecretSharing
                 tmpCoefficient = new BigInteger(1, storage);
                 coefficient = tmpCoefficient.Mod(PrimeModulo);
                 // destroy tmpCoefficient
+                tmpCoefficient.Dispose();
                 Coefficients[i] = coefficient;
             }
 
@@ -124,11 +126,15 @@ namespace shamirsSecretSharing
                 help2 = Coefficients[i].Multiply(X.ModPow(new BigInteger(i.ToString()),PrimeModulo));
                 help1 = Y.Add(help2);
                 // destroy Y, help2
+                Y.Dispose();
+                help2.Dispose();
                 Y = help1.Mod(PrimeModulo);
                 // destroy help1
+                help1.Dispose();
             }
             byte[] res = Y.ToByteArrayUnsigned();
             // destroy Y
+            Y.Dispose();
             return res;
         }
 
@@ -200,14 +206,20 @@ namespace shamirsSecretSharing
                 help1 = yVals[i].Multiply(xCoeffs[i]);
                 help2 = help1.Mod(bigPrimeModulo);
                 //Destroy help1, yVals[i]
+                help1.Dispose();
+                yVals[i].Dispose();
                 help1 = ret;
                 ret = ret.Add(help2);
                 // destroy help1,help2
+                help1.Dispose();
+                help2.Dispose();
             }
             help1 = ret;
             ret = ret.Mod(bigPrimeModulo);
             res = ret.ToByteArrayUnsigned();
             // destroy help1, ret
+            help1.Dispose();
+            ret.Dispose();
             return res;
         }
 
@@ -263,8 +275,10 @@ namespace shamirsSecretSharing
             for (int i = 0; i < Coefficients.Length; i++)
             {
                 // Destroy Coefficients
+                Coefficients[i].Dispose();
             }
             // Destroy Prime Modulo
+            PrimeModulo.Dispose();
         }
     }
 }

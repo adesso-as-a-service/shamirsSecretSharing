@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Linq;
 using Org.BouncyCastle.Crypto.Digests;
 
 namespace shamirsSecretSharing
@@ -40,6 +39,10 @@ namespace shamirsSecretSharing
             Array.Copy(x, X, x.Length);
         }
 
+
+        /// <summary>
+        /// Calculate the SHA256-Hash of the share
+        /// </summary>
         public byte[] GetHash()
         {
             Sha256Digest sha256 = new Sha256Digest();

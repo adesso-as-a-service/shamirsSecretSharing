@@ -9,6 +9,10 @@ using Org.BouncyCastle.Security;
 
 namespace shamirsSecretSharing
 {
+    /// <summary>
+    /// Public Key for shamirs secret sharing
+    /// </summary>
+    [Serializable]
     public class PublicKey
     {
         /// <summary>
@@ -58,6 +62,14 @@ namespace shamirsSecretSharing
 
         public static readonly uint[] allowedSizes = { 1024, 2048, 3072, 4096 };
 
+
+
+        /// <summary>
+        /// Creates a public key with the given parameters
+        /// </summary>
+        /// <param name="n"> Number of shares needed to decrypt the secret</param>
+        /// <param name="m"> Number of shares to be created</param>
+        /// <param name="size"> BitSize of the prime modulo</param> 
         public PublicKey(uint n, uint m, uint size)
         {
             // Validate Arguments
@@ -74,6 +86,11 @@ namespace shamirsSecretSharing
             this.PrimeModulo = prime.ToByteArrayUnsigned();
         }
 
+
+        /// <summary>
+        /// Calculates and stores the hashes of the given shares to be associated with this public key
+        /// </summary>
+        /// <param name="shares"> Shares to be associated with this public key</param>
         public void CalculateHashes(Share[] shares)
         {
             Sha256Digest sha256Digest = new Sha256Digest();
@@ -85,6 +102,10 @@ namespace shamirsSecretSharing
             }
         }
 
+        /// <summary>
+        /// Checks if the given share is associated with this share
+        /// </summary>
+        /// <param name="share"> Shares to be checked</param>
         public bool ContainsShare(Share share)
         {
             return Array.Exists(this.PrivateShareHashs, element => element.SequenceEqual(share.GetHash()));
