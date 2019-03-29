@@ -111,7 +111,7 @@ namespace shamirsSecretSharing
             }
 
             pub.CalculateHashes(shares);
-
+            poly.Destroy();
             return new Tuple<PublicKey, Share[]>(pub, shares);
         }
 

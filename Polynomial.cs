@@ -88,7 +88,7 @@ namespace shamirsSecretSharing
             if (coefficient.CompareTo(PrimeModulo) != -1)
             {
                 // destroy coefficient
-                coefficient.Dispose();
+                //coefficient.Dispose();
                 throw new ArgumentException("the given zeroCoefficient is bigger than the modulo");
             }
             Coefficients[0] = coefficient;
@@ -98,7 +98,7 @@ namespace shamirsSecretSharing
                 tmpCoefficient = new BigInteger(1, storage);
                 coefficient = tmpCoefficient.Mod(PrimeModulo);
                 // destroy tmpCoefficient
-                tmpCoefficient.Dispose();
+                //tmpCoefficient.Dispose();
                 Coefficients[i] = coefficient;
             }
 
@@ -126,15 +126,15 @@ namespace shamirsSecretSharing
                 help2 = Coefficients[i].Multiply(X.ModPow(new BigInteger(i.ToString()),PrimeModulo));
                 help1 = Y.Add(help2);
                 // destroy Y, help2
-                Y.Dispose();
-                help2.Dispose();
+                //Y.Dispose();
+               // help2.Dispose();
                 Y = help1.Mod(PrimeModulo);
                 // destroy help1
-                help1.Dispose();
+                //help1.Dispose();
             }
             byte[] res = Y.ToByteArrayUnsigned();
             // destroy Y
-            Y.Dispose();
+            //Y.Dispose();
             return res;
         }
 
@@ -204,22 +204,25 @@ namespace shamirsSecretSharing
             for (int i = 0; i < xValues.Length; i++)
             {
                 help1 = yVals[i].Multiply(xCoeffs[i]);
+                //yVals[i].Dispose();
+                //xVals[i].Dispose();
+
                 help2 = help1.Mod(bigPrimeModulo);
+                //help1.Dispose();
                 //Destroy help1, yVals[i]
-                help1.Dispose();
-                yVals[i].Dispose();
+
                 help1 = ret;
                 ret = ret.Add(help2);
                 // destroy help1,help2
-                help1.Dispose();
-                help2.Dispose();
+                //help1.Dispose();
+                //help2.Dispose();
             }
             help1 = ret;
             ret = ret.Mod(bigPrimeModulo);
             res = ret.ToByteArrayUnsigned();
             // destroy help1, ret
-            help1.Dispose();
-            ret.Dispose();
+            //help1.Dispose();
+            //ret.Dispose();
             return res;
         }
 
