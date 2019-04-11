@@ -59,5 +59,60 @@ namespace shamirsSecretSharing
             var share = obj as Share;
             return this.GetHash().SequenceEqual(share.GetHash());
         }
+
+        public byte[] ToBinary()
+        {
+            List<byte> retVal = new List<byte> { };
+            byte[] help, len;
+
+            // add X
+            retVal.Add(0x01);
+            help = PublicKey.getSubarry(X, 0, X.Length);
+            len = BitConverter.GetBytes(help.Length);
+            retVal.AddRange(len);
+            retVal.AddRange(help);
+
+            // add encryptedKey
+
+            retVal.Add(0x02);
+            help = PublicKey.getSubarry(Y, 0, Y.Length);
+            len = BitConverter.GetBytes(help.Length);
+            retVal.AddRange(len);
+            retVal.AddRange(help);
+
+            return retVal.ToArray();
+        }
+
+        public static Share FromBinary(byte[] array)
+        {
+            Share sh;
+            byte[] x, y;
+            int len;
+            x = y = new byte[0];
+            for (int i = 0; i < array.Length; i++)
+            {
+                switch (array[i])
+                {
+                    case 0x01:
+                        len = BitConverter.ToInt32(array, i + 1);
+                        i = i + 4;
+                        x = PublicKey.getSubarry(array, i + 1, i + 1 + len);
+                        i = i + len;
+                        break;
+                    case 0x02:
+                        len = BitConverter.ToInt32(array, i + 1);
+                        i = i + 4;
+                        y = PublicKey.getSubarry(array, i + 1, i + 1 + len);
+                        i = i + len;
+                        break;
+                    default:
+                        throw new FormatException("Share Format is incorrect");
+                }
+            }
+
+            sh = new Share(x,y);
+            return sh;
+        }
     }
+    
 }

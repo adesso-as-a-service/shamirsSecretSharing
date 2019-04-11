@@ -12,7 +12,6 @@ namespace shamirsSecretSharing
     /// <summary>
     /// Public Key for shamirs secret sharing
     /// </summary>
-    [Serializable]
     public class PublicKey
     {
         /// <summary>
@@ -109,6 +108,178 @@ namespace shamirsSecretSharing
         public bool ContainsShare(Share share)
         {
             return Array.Exists(this.PrivateShareHashs, element => element.SequenceEqual(share.GetHash()));
+        }
+
+        public byte[] ToBinary()
+        {
+            List<byte> retVal = new List<byte> { };
+            byte[] helper;
+            byte[] len;
+
+            // append type 0x01 = N
+            retVal.Add(0x01);
+
+            // getByteArray
+            helper = BitConverter.GetBytes(N);
+
+            // append length and helper
+            retVal.AddRange(helper);
+
+
+
+            // append type 0x02 = M
+            retVal.Add(0x02);
+
+            // getByteArray
+            helper = BitConverter.GetBytes(M);
+
+            // append length and helper
+            retVal.AddRange(helper);
+
+
+            // append type 0x03 = ModSize
+            retVal.Add(0x03);
+
+            // getByteArray
+            helper = BitConverter.GetBytes(ModSize);
+
+            // append length and helper
+            retVal.AddRange(helper);
+
+
+            // append type 0x04 = primeModulo
+            retVal.Add(0x04);
+
+            // getByteArray
+            helper = PrimeModulo;
+            len = BitConverter.GetBytes(helper.Length);
+
+            // append length and helper
+            retVal.AddRange(len);
+            retVal.AddRange(helper);
+
+
+            // append type 0x05 = Private Shares
+            retVal.Add(0x05);
+
+            // getByteArray
+            helper = getBinaryPrivateShares();
+            len = BitConverter.GetBytes(helper.Length);
+
+            // append length and helper
+            retVal.AddRange(len);
+            retVal.AddRange(helper);
+
+            return retVal.ToArray();
+        }
+
+        private byte[] getBinaryPrivateShares()
+        {
+            List<byte> retVal = new List<byte> { };
+            byte[] helper;
+            byte[] len;
+
+            for (int x = 0; x < PrivateShareHashs.Length; x++)
+            {
+                // append type 0x01 = Private Share
+                retVal.Add(0x01);
+
+                // getByteArray
+                helper = PrivateShareHashs[x];
+                len = BitConverter.GetBytes(helper.Length);
+
+                // append length and helper
+                retVal.AddRange(len);
+                retVal.AddRange(helper);
+            }
+
+            return retVal.ToArray();
+
+        } 
+
+        public static PublicKey ReadFromBinary(byte[] pubBin)
+        {
+            PublicKey pubKey;
+            uint n, m, modSize;
+            byte[] primeModulo;
+            byte[][] privateKeyHashs;
+            byte[] help;
+            int len;
+            n = m = modSize = 0;
+            primeModulo = new byte[0];
+            privateKeyHashs = new byte[0][];
+            for (int i = 0; i < pubBin.Length; i++)
+            {
+                switch (pubBin[i]) {
+                    case 0x01:
+                        n = BitConverter.ToUInt32(pubBin, i + 1);
+                        i = i + 4;
+                        break;
+                    case 0x02:
+                        m = BitConverter.ToUInt32(pubBin, i + 1);
+                        i = i + 4;
+                        break;
+                    case 0x03:
+                        modSize = BitConverter.ToUInt32(pubBin, i + 1);
+                        i = i + 4;
+                        break;
+                    case 0x04:
+                        len = BitConverter.ToInt32(pubBin, i + 1);
+                        i = i + 4;
+                        primeModulo = getSubarry(pubBin, i + 1, i + 1 + len);
+                        i = i + len;
+                        break;
+                    case 0x05:
+                        len = BitConverter.ToInt32(pubBin, i + 1);
+                        i = i + 4;
+                        help = getSubarry(pubBin, i + 1, i + 1 + len);
+                        privateKeyHashs = privateKeyHashsFromBinary(help);
+                        i = i + len;
+                        break;
+
+                    default:
+                        throw new FormatException("PublicKey Binary Format is incorrect");
+                }
+            }
+            pubKey = new PublicKey(n, m, modSize);
+            pubKey.PrimeModulo = primeModulo;
+            pubKey.PrivateShareHashs = privateKeyHashs;
+
+            return pubKey;
+        }
+
+        private static byte[][] privateKeyHashsFromBinary(byte[] array)
+        {
+            List<byte[]> retVal = new List<byte[]> { };
+            byte[] help;
+            int len;
+            for (int i = 0; i < array.Length; i++)
+            {
+                switch (array[i])
+                {
+                    case 0x01:
+                        len = BitConverter.ToInt32(array, i + 1);
+                        i = i + 4;
+                        help = getSubarry(array, i + 1, i + 1 + len);
+                        retVal.Add(help);
+                        i = i + len;
+                        break;
+                    default:
+                        throw new FormatException("PrivateKeyHash Binary Format is incorrect");
+                }
+            }
+            return retVal.ToArray();
+        }
+
+        public static byte[] getSubarry(byte[] array, int start, int stop)
+        {
+            if (stop > array.Length) throw new ArgumentException("Stop is out of bounds");
+            if (start < 0) throw new ArgumentException("Start is out of bounds");
+            if (start >= stop) throw new ArgumentException("Start can't be bigger or as big as stop");
+
+            byte[] retVal = new byte[stop - start];
+            Array.Copy(array, start, retVal, 0, stop - start);
+            return retVal;
         }
     }
 }
