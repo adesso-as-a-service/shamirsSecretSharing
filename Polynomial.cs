@@ -278,10 +278,8 @@ namespace shamirsSecretSharing
             for (int i = 0; i < Coefficients.Length; i++)
             {
                 // Destroy Coefficients
-                Coefficients[i].Dispose();
             }
             // Destroy Prime Modulo
-            PrimeModulo.Dispose();
         }
     }
 }
