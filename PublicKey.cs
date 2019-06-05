@@ -62,7 +62,17 @@ namespace shamirsSecretSharing
         public static readonly uint[] allowedSizes = { 1024, 2048, 3072, 4096 };
 
 
+        private PublicKey(uint n, uint m, uint ModSize ,byte[] primeModulo)
+        {
+            if (m < n) throw new ArgumentException("m has to be greater or equal to n");
+            if (n < 2) throw new ArgumentException("n has to be greater or equal to 2");
+            if (!Array.Exists(allowedSizes, element => element == ModSize)) throw new ArgumentException(string.Format("size has to be in ( {0} )", string.Join(", ", allowedSizes)));
 
+            this.N = n;
+            this.M = m;
+            this.ModSize = ModSize;
+            this.PrimeModulo = primeModulo;
+        }
         /// <summary>
         /// Creates a public key with the given parameters
         /// </summary>
@@ -241,8 +251,7 @@ namespace shamirsSecretSharing
                         throw new FormatException("PublicKey Binary Format is incorrect");
                 }
             }
-            pubKey = new PublicKey(n, m, modSize);
-            pubKey.PrimeModulo = primeModulo;
+            pubKey = new PublicKey(n, m, modSize,primeModulo);
             pubKey.PrivateShareHashs = privateKeyHashs;
 
             return pubKey;
